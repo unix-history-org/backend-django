@@ -127,5 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
+# PyCharm conf remove
 .idea/
+
+# settings remove
+unixhistory/unixhistory/settings.py

@@ -79,7 +79,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'unixhistory',
-        'USER': 'postgres',
+        'USER': '',
         'PASSWORD': '',
         'HOST': '',
         'PORT': '',
