@@ -25,7 +25,12 @@ SECRET_KEY = 'v5!8(%t3&=iy+#z-4p!!p@g%^thb-$gq!hy(t1mjy29#*e2uc9'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'unix-history.org',
+    '10.0.0.10',
+    '127.0.0.1',
+    'localhost',
+]
 
 
 # Application definition
