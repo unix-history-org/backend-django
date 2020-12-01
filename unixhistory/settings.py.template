@@ -1,0 +1,21 @@
+from .base import *
+
+# ЗАДАЙТЕ СВОИ НАСТРОЙКИ ПОДКЛЮЧЕНИЯ К БАЕЗ
+DATABASES = {
+    'default': {
+        'CHARSET': 'utf8',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
+    }
+
+}
+
+QEMU = {
+    'host': '127.0.0.1',
+}
+
+SITE_ID = 3

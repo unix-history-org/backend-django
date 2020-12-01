@@ -131,4 +131,4 @@ dmypy.json
 .idea/
 
 # settings remove
-unixhistory/unixhistory/settings.py
+unixhistory/settings.py

@@ -1,7 +1,6 @@
 from django.contrib import admin
-from .models import *
 
-admin.site.register(Photos)
+from os_api.models import *
+
 admin.site.register(Permiss)
 admin.site.register(OS)
-admin.site.register(User)

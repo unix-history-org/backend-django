@@ -56,8 +56,8 @@ class Migration(migrations.Migration):
                 ('login', models.CharField(max_length=100, verbose_name='Логин')),
                 ('password', models.CharField(max_length=100, verbose_name='Пороль')),
                 ('is_admin', models.BooleanField(verbose_name='Админ')),
-                ('avatar', models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, to='database.photos', verbose_name='Аватар')),
-                ('current_os', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='database.os', verbose_name='Текущая ОС')),
+                ('avatar', models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.photos', verbose_name='Аватар')),
+                ('current_os', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.os', verbose_name='Текущая ОС')),
             ],
             options={
                 'verbose_name': 'Пользователь',
@@ -67,11 +67,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='os',
             name='permission',
-            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, to='database.permiss', verbose_name='Права'),
+            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.permiss', verbose_name='Права'),
         ),
         migrations.AddField(
             model_name='os',
             name='photos',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='database.photos', verbose_name='Фото'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.photos', verbose_name='Фото'),
         ),
     ]
