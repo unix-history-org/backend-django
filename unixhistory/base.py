@@ -123,6 +123,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = 'static'
+STATIC_ROOT = BASE_DIR.joinpath("static")
 
 AUTH_USER_MODEL = "user.User"
