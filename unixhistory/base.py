@@ -126,3 +126,17 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR.joinpath("static")
 
 AUTH_USER_MODEL = "user.User"
+
+REST_FRAMEWORK = {
+#     'DEFAULT_FILTER_BACKENDS': (
+#         'rest_framework_filters.backends.DjangoFilterBackend',
+#     ),
+#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+#     'PAGE_SIZE': 100500,
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'plmem.authentication.TokenCookieAuthentication',
+#     ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}
