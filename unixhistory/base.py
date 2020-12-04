@@ -139,3 +139,16 @@ CORS_ALLOW_METHODS = (
     'OPTIONS'
 )
 CORS_ALLOW_CREDENTIALS = True
+REST_FRAMEWORK = {
+#     'DEFAULT_FILTER_BACKENDS': (
+#         'rest_framework_filters.backends.DjangoFilterBackend',
+#     ),
+#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+#     'PAGE_SIZE': 100500,
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'plmem.authentication.TokenCookieAuthentication',
+#     ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}
