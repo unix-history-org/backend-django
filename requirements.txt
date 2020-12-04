@@ -5,3 +5,5 @@ Markdown==3.3.3
 psycopg2==2.7.7
 dj-rest-auth==2.1.1
 django-allauth>=0.44
+django-cors-headers>=3.5.0
+
