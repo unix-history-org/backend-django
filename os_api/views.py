@@ -38,7 +38,8 @@ class OSSSHView(WebsocketConsumer):
                     self.disk_name = utils.get_random_string(16)
                     self.port_num = utils.get_random_port()
                     start_string = (os_obj.start_config %
-                                    (self.disk_name, self.disk_name, str(self.port_num))).split('\r\n')
+                                    (self.disk_name, self.disk_name, str(self.port_num),
+                                     self.disk_name)).split('\r\n')
                     if os_obj.ssh_type == SSHTYPECHOICE.SSH:
                         cp_ret_code = subprocess.call(start_string[0].split(' '))
                         if cp_ret_code == 0:
@@ -53,4 +54,9 @@ class OSSSHView(WebsocketConsumer):
         self.send(text_data=self.disk_name + ": " + text_data)
 
     def disconnect(self, message):
-        pass
+        if self.qemu_proc is not None:
+            self.qemu_proc.kill()
+            stop_config = (self.os_obj.stop_config % (self.disk_name)).split('\r\n')
+            rm_popen = subprocess.call(stop_config[0].split(' '))
+            self.send(rm_popen)
+        self.close()
