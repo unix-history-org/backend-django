@@ -43,18 +43,14 @@ class OSSSHView(WebsocketConsumer):
                         cp_ret_code = subprocess.call(start_string[0].split(' '))
                         if cp_ret_code == 0:
                             self.qemu_proc = subprocess.Popen(start_string[1].split(' '))
-                    self.send(start_string)
+                    self.send(start_string[1])
             else:
                 self.close()
         else:
             self.close()
 
     def receive(self, text_data=None, bytes_data=None):
-        if text_data.startswith("/name"):
-            self.username = text_data[5:].strip()
-            self.send(text_data="[set your username to %s]" % self.username)
-        else:
-            self.send(text_data=self.username + ": " + text_data)
+        self.send(text_data=self.disk_name + ": " + text_data)
 
     def disconnect(self, message):
         pass
