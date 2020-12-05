@@ -7,3 +7,4 @@ dj-rest-auth==2.1.1
 django-allauth==0.44
 django-cors-headers==3.5.0
 channels==3.0.2
+paramiko==2.7.2
