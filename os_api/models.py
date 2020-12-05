@@ -1,10 +1,19 @@
 from django.db import models
-
 from core.models import Photos
 
 
-class Permiss(models.Model):  # TODO: rename this
-    live_time = models.DateTimeField(verbose_name="Время жизни")
+class EMULATIONCHOICE(models.IntegerChoices):
+    NO = -1
+    QEMU_KVM = 1
+
+
+class SSHTYPECHOICE(models.IntegerChoices):
+    SSH = 1
+    RAW_CONSOLE = 2
+
+
+class Permiss(models.Model): # TODO: rename this
+    live_time = models.DurationField(verbose_name="Время жизни")
 
     class Meta:
         verbose_name = "Права"
@@ -17,11 +26,15 @@ class OS(models.Model):
     vendor = models.CharField(verbose_name="Создатель ОС", max_length=500, null=True, blank=True)
     html_text = models.TextField(verbose_name="HTML текст")
     photos = models.ForeignKey(Photos, verbose_name="Фото", on_delete=models.SET_NULL, null=True, blank=True)
-    config = models.TextField(verbose_name="Конфиг", max_length=50000, null=True, blank=True)
+    start_config = models.TextField(verbose_name="Конфигурация запуска", max_length=50000, null=True, blank=True)
+    stop_config = models.TextField(verbose_name="Конфигурация остановки", max_length=50000, null=True, blank=True)
     ssh_enable = models.BooleanField(verbose_name="SSH активирован", default=False)
     vnc_enable = models.BooleanField(verbose_name="VNC активирован", default=False)
-    permission = models.OneToOneField(Permiss, verbose_name="Права", on_delete=models.SET_NULL, null=True, blank=True)
+    permission = models.OneToOneField(Permiss, verbose_name="Права", on_delete=models.CASCADE, null=True)
     is_active = models.BooleanField(verbose_name="Активна", default=True)
+    emulation_type = models.IntegerField(verbose_name="Тип эмуляции", choices=EMULATIONCHOICE.choices,
+                                         default=EMULATIONCHOICE.NO)
+    ssh_type = models.IntegerField(verbose_name="Тип консольного подключения", choices=SSHTYPECHOICE.choices, null=True)
 
     def __str__(self):
         return self.name

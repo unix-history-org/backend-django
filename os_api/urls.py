@@ -1,6 +1,7 @@
+from django.conf.urls import url
 from django.urls import include, path
 
-from os_api.views import OSListView
+from os_api.views import OSListView, OSSSHView
 
 pass
 # [GET] /api/os/list - список всех систем
@@ -11,6 +12,10 @@ pass
 
 urlpatterns = [
     path(r'list/', OSListView.as_view()),
-    # path(r'list/', include('dj_rest_auth.registration.urls')),
+
 ]
 
+websocket_urlpatterns = [
+    # url(r'^api/os/(?P<pk>[^/]+)/ssh', OSSSHView.as_asgi()),
+    path(r'api/os/<int:pk>/ssh', OSSSHView.as_asgi()),
+]

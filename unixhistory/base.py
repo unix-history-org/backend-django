@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'channels',
     'corsheaders',
     'allauth',
     'rest_framework',
@@ -81,7 +82,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'unixhistory.wsgi.application'
-
+ASGI_APPLICATION = "unixhistory.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -152,3 +153,5 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     )
 }
+
+BASE_PORT_SSH_REDIR = (40000, 65534)
