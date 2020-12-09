@@ -64,7 +64,7 @@ class OSSSHView(WebsocketConsumer):
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.client.connect(hostname="127.0.0.1", username="root", password="uh", port=self.port_num)
         if text_data is not None:
-
+            print(text_data)
             stdin, stdout, stderr = self.client.exec_command(text_data)
             self.send(stdout.read() + stderr.read())
 
