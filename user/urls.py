@@ -8,6 +8,6 @@ from django.urls import include, path
 # [GET] /api/user/permission - данные о правах на запуск ВМ
 # [GET] /api/user/me - информация о текущем пользователе
 urlpatterns = [
-    # path(r'', include('dj_rest_auth.urls')),
-    # path(r'', include('dj_rest_auth.registration.urls')),
+    path(r'', include('dj_rest_auth.urls')),
+    path(r'', include('dj_rest_auth.registration.urls')),
 ]

@@ -19,9 +19,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'v5!8(%t3&=iy+#z-4p!!p@g%^thb-$gq!hy(t1mjy29#*e2uc9'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -30,6 +27,7 @@ ALLOWED_HOSTS = [
     '10.0.0.10',
     '127.0.0.1',
     'localhost',
+    'api.unix-history.org'
 ]
 
 
@@ -47,6 +45,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'allauth',
     'rest_framework',
+    'rest_framework.authtoken',
     'core',
     'os_api',
     'user',

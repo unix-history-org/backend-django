@@ -12,6 +12,7 @@ pass
 
 urlpatterns = [
     path(r'list/', OSListView.as_view()),
+    path(r'<int:pk>/', OSListView.as_view()),
 
 ]
 

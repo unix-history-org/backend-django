@@ -1,17 +1,19 @@
 import subprocess
+import paramiko
 from time import sleep
+
 
 from channels.generic.websocket import WebsocketConsumer
 from rest_framework.generics import ListAPIView
+from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.response import Response
 
 from os_api import utils
 from os_api.models import OS, EMULATIONCHOICE, Permiss, SSHTYPECHOICE
 from os_api.serializers import OSListSerializer
-import paramiko
 
 
-class OSListView(ListAPIView):
+class OSListView(ListAPIView, RetrieveModelMixin):
     serializer_class = OSListSerializer
     # pagination_class = None
 
@@ -25,7 +27,17 @@ class OSListView(ListAPIView):
         serializer = OSListSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    def get(self, request, *args, **kwargs):
+        if 'pk' in kwargs.keys():
+            instance = self.get_object()
+            instance.read = True
+            instance.save()
+            return self.retrieve(request, *args, **kwargs)
+        else:
+            return self.list(request)
 
+
+# TODO: Rewrite this fucking shit
 class OSSSHView(WebsocketConsumer):
     def connect(self):
         os_id = self.scope['url_route']['kwargs']['pk']

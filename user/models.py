@@ -44,8 +44,9 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):  # TODO: PermissionsMixin
-    username = None # TODO: Fixit
-    USERNAME_FIELD = "email"
+    username = models.CharField(verbose_name="Имя пользователя", max_length=255, unique=True)  # INFO: Not Use
+    USERNAME_FIELD = "username"
+    EMAIL_FIELD = "email"
     email = models.EmailField(_("Email"), unique=True)
     objects = UserManager()
 
@@ -57,8 +58,10 @@ class User(AbstractBaseUser, PermissionsMixin):  # TODO: PermissionsMixin
         _("active"),
         default=True,
     )
-    current_os = models.ForeignKey(OS, verbose_name="Текущая ОС", on_delete=models.SET_NULL, null=True)
-    avatar = models.OneToOneField(Photos, verbose_name="Аватар", on_delete=models.SET_NULL, null=True)
+    current_os = models.ForeignKey(OS, verbose_name="Текущая ОС", on_delete=models.SET_NULL,
+                                   null=True, blank=True)
+    avatar = models.OneToOneField(Photos, verbose_name="Аватар", on_delete=models.SET_NULL,
+                                  null=True, blank=True)
     is_admin = models.BooleanField(verbose_name="Админ")
 
     def __str__(self):
