@@ -98,24 +98,27 @@ class OSSSHView(WebsocketConsumer):
             self.send("Unknown err")
 
     def receive(self, text_data=None, bytes_data=None):
-        try:
-            self.ssh.send(text_data)
-            self.ssh.settimeout(5)
-            output = ""
-            while True:
-                try:
-                    page = self.ssh.recv(10**5).decode("ascii")
-                    output += page
-                    time.sleep(0.5)
-                except socket.timeout:
-                    break
-                if "More" in page:
-                    self.ssh.send(" ")
-            output = re.sub(" +--More--| +\x08+ +\x08+", "\n", output)
-            output = re.sub("\r", "\n", output)
-            self.send(output)
-        except Exception as e:
-            self.send("Unknown err")
+        if text_data == "":
+            self.send("")
+        else:
+            try:
+                self.ssh.send(text_data)
+                self.ssh.settimeout(5)
+                output = ""
+                while True:
+                    try:
+                        page = self.ssh.recv(10**5).decode("ascii")
+                        output += page
+                        time.sleep(0.5)
+                    except socket.timeout:
+                        break
+                    if "More" in page:
+                        self.ssh.send(" ")
+                output = re.sub(" +--More--| +\x08+ +\x08+", "\n", output)
+                output = re.sub("\r", "\n", output)
+                self.send(output)
+            except Exception as e:
+                self.send("Unknown err")
 
     def disconnect(self, message):
         if self.qemu_proc is not None:
