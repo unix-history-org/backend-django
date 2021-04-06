@@ -161,4 +161,4 @@ class OSSSHView(WebsocketConsumer):
         for _ in range(seconds * 1000):
             libc = ctypes.CDLL('libc.so.6')
             libc.usleep(1000)
-            self.send("")
+            self.send(".")
