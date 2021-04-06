@@ -158,7 +158,7 @@ class OSSSHView(WebsocketConsumer):
         return ret_mac
 
     def socket_sleep(self, seconds):
-        for _ in range(seconds * 100):
+        for _ in range(seconds * 1000):
             libc = ctypes.CDLL('libc.so.6')
-            libc.usleep(10000)
+            libc.usleep(1000)
             self.send("")
