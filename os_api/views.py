@@ -107,7 +107,7 @@ class OSSSHView(WebsocketConsumer):
                 output = ""
                 while True:
                     try:
-                        page = self.ssh.recv(10**5).decode("ascii")
+                        page = self.ssh.recv(10**5).decode("utf-8", "ignore")
                         output += page
                         time.sleep(0.5)
                     except socket.timeout:
