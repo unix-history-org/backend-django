@@ -103,7 +103,7 @@ class OSSSHView(WebsocketConsumer):
         else:
             try:
                 self.ssh.send(text_data)
-                self.ssh.settimeout(10)
+                self.ssh.settimeout(20)
                 output = ""
                 while True:
                     try:
