@@ -121,6 +121,7 @@ class OSSSHView(WebsocketConsumer):
                 self.send("Unknown err")
 
     def disconnect(self, message):
+        super(OSSSHView, self).disconnect(message)
         if self.qemu_proc is not None:
             self.qemu_proc.kill()
             stop_config = (self.os_obj.stop_config % (self.disk_name)).split('\r\n')
