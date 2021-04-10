@@ -27,7 +27,8 @@ ALLOWED_HOSTS = [
     '10.0.0.10',
     '127.0.0.1',
     'localhost',
-    'api.unix-history.org'
+    'api.unix-history.org',
+    '*'
 ]
 
 
