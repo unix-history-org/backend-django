@@ -23,11 +23,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'unix-history.org',
-    '10.0.0.10',
-    '127.0.0.1',
-    'localhost',
-    'api.unix-history.org',
     '*'
 ]
 
