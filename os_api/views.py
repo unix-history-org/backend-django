@@ -94,7 +94,8 @@ class OSSSHView(WebsocketConsumer):
                                 look_for_keys=False,
                                 allow_agent=False)
             self.ssh = self.client.invoke_shell()
-        except:
+        except Exception as e:
+            print(e)
             self.send("Unknown err")
 
     def receive(self, text_data=None, bytes_data=None):
@@ -118,7 +119,7 @@ class OSSSHView(WebsocketConsumer):
                 output = re.sub("\r", "\n", output)
                 self.send(output)
             except Exception as e:
-                self.send("Unknown err")
+                print(e)
 
     def disconnect(self, message):
         super(OSSSHView, self).disconnect(message)
