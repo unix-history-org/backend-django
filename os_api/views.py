@@ -96,7 +96,7 @@ class OSSSHView(WebsocketConsumer):
 
     def receive(self, text_data=None, bytes_data=None):
         if not self.ready:
-            self.send("")
+            self.send("Ещё не всё")
             return
         if text_data == "":
             self.send("")
