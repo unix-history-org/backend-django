@@ -106,11 +106,12 @@ class OSSSHView(WebsocketConsumer):
                 # ssh = self.client.invoke_shell()
                 # self.ssh.settimeout(5)
                 stdin, stdout, stderr = self.client.exec_command(text_data)
-                self.send(
+                output_str = (
                     stdout.read().decode("utf-8") +
                     "\n\n" +
                     stderr.read().decode("utf-8")
-                )
+                ).replace("\n", "<br\>")
+                self.send(output_str)
             except Exception as e:
                 print(e)
             finally:
