@@ -43,6 +43,7 @@ class OSListView(ListAPIView, RetrieveModelMixin):
 class OSSSHView(WebsocketConsumer):
     def __init__(self):
         super(OSSSHView, self).__init__()
+        self.ready = False
         self.client = None
         self.qemu_proc = None
         self.os_obj = None
@@ -72,7 +73,8 @@ class OSSSHView(WebsocketConsumer):
                             self.qemu_proc = subprocess.Popen(start_string[1].split(' '))
                             self.send("Запущено, ожидаем включения")
                             self.socket_sleep(60)
-                            self.send("READY")
+                            self.send("Можете начинать")
+                            self.ready = True
             else:
                 self.close()
         else:
@@ -93,6 +95,9 @@ class OSSSHView(WebsocketConsumer):
             self.send("Unknown err")
 
     def receive(self, text_data=None, bytes_data=None):
+        if not self.ready:
+            self.send("")
+            return
         if text_data == "":
             self.send("")
         else:
