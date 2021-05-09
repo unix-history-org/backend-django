@@ -59,7 +59,7 @@ class OSSSHView(WebsocketConsumer):
             if os_obj.ssh_enable:
                 self.os_obj = os_obj
                 self.accept()
-                self.send(text_data="Подключенно, подождите пару минут")
+                self.send(text_data="Подключено, подождите пару минут")
                 if os_obj.emulation_type == EMULATIONCHOICE.QEMU_KVM:
                     self.disk_name = utils.get_random_string(16)
                     self.port_num = utils.get_random_port()
@@ -110,7 +110,7 @@ class OSSSHView(WebsocketConsumer):
                     stdout.read().decode("utf-8") +
                     "\n\n" +
                     stderr.read().decode("utf-8")
-                ).replace("\n", "<br\>")
+                ).replace("\n", "<br>")
                 self.send(output_str)
             except Exception as e:
                 print(e)
