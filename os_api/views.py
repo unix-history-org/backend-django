@@ -77,7 +77,6 @@ class OSSSHView(WebsocketConsumer):
                             self.send("Запущено, ожидаем включения")
                             self.socket_sleep(60)
                             self.send("READY")
-                            self.ssh_connect()
             else:
                 self.close()
         else:
@@ -93,7 +92,6 @@ class OSSSHView(WebsocketConsumer):
                                 port=self.port_num,
                                 look_for_keys=False,
                                 allow_agent=False)
-            self.ssh = self.client.invoke_shell()
         except Exception as e:
             print(e)
             self.send("Unknown err")
@@ -103,14 +101,18 @@ class OSSSHView(WebsocketConsumer):
             self.send("")
         else:
             try:
-                self.ssh.send(text_data)
-                self.ssh.settimeout(20)
+                self.ssh_connect()
+                self.ssh = self.client.invoke_shell()
+                self.ssh.get_pty()
+                self.socket_sleep(10)
+                self.ssh.exec_command(text_data)
+                self.ssh.settimeout(10)
                 output = ""
                 while True:
                     try:
                         page = self.ssh.recv(10**5).decode("utf-8", "ignore")
                         output += page
-                        time.sleep(0.5)
+                        self.socket_sleep(1)
                     except socket.timeout:
                         break
                     if "More" in page:
