@@ -1,9 +1,5 @@
 import random
-import re
-import socket
 import subprocess
-import time
-from time import sleep
 import ctypes
 
 import paramiko
@@ -102,26 +98,18 @@ class OSSSHView(WebsocketConsumer):
         else:
             try:
                 self.ssh_connect()
-                self.ssh = self.client.invoke_shell()
-                self.ssh.get_pty()
-                self.socket_sleep(10)
-                self.ssh.exec_command(text_data)
-                self.ssh.settimeout(10)
-                output = ""
-                while True:
-                    try:
-                        page = self.ssh.recv(10**5).decode("utf-8", "ignore")
-                        output += page
-                        self.socket_sleep(1)
-                    except socket.timeout:
-                        break
-                    if "More" in page:
-                        self.ssh.send(" ")
-                output = re.sub(" +--More--| +\x08+ +\x08+", "\n", output)
-                output = re.sub("\r", "\n", output)
-                self.send(output)
+                # ssh = self.client.invoke_shell()
+                # self.ssh.settimeout(5)
+                stdin, stdout, stderr = self.client.exec_command(text_data)
+                self.send(
+                    stdout.read().decode("utf-8") +
+                    "\n\n" +
+                    stderr.read().decode("utf-8")
+                )
             except Exception as e:
                 print(e)
+            finally:
+                self.client.close()
 
     def disconnect(self, message):
         super(OSSSHView, self).disconnect(message)
