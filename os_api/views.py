@@ -67,6 +67,7 @@ class OSSSHView(WebsocketConsumer):
                     start_string = (os_obj.start_config %
                                     (self.disk_name, self.disk_name, self.mac, str(self.port_num),
                                      self.disk_name)).split('\r\n')
+                    print(start_string)
                     if os_obj.ssh_type == SSHTYPECHOICE.SSH:
                         cp_ret_code = subprocess.call(start_string[0].split(' '))
                         if cp_ret_code == 0:
