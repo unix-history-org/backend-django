@@ -52,8 +52,10 @@ class OSSSHView(WebsocketConsumer):
         self.mac = None
 
     def send(self, text_data=None, bytes_data=None, close=False):
-        if text_data is not None:
-            text_data.replace("\n", "<br>")
+        text_data_new = text_data
+        if text_data_new is not None:
+            text_data_new.replace("\n", "<br>")
+        text_data_new += "<br>"
         super().send(text_data, bytes_data, close)
 
     def connect(self):
