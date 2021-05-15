@@ -56,7 +56,7 @@ class OSSSHView(WebsocketConsumer):
         if text_data_new is not None:
             text_data_new.replace("\n", "<br>")
         text_data_new += "<br>"
-        super().send(text_data, bytes_data, close)
+        super().send(text_data_new, bytes_data, close)
 
     def connect(self):
         os_id = self.scope['url_route']['kwargs']['pk']
