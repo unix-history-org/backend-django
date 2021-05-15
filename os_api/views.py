@@ -5,7 +5,7 @@ import ctypes
 import paramiko
 
 
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 from rest_framework.generics import ListAPIView
 from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.response import Response
@@ -40,7 +40,7 @@ class OSListView(ListAPIView, RetrieveModelMixin):
 
 
 # TODO: Rewrite this fucking shit
-class OSSSHView(WebsocketConsumer):
+class OSSSHView(AsyncWebsocketConsumer):
     def __init__(self):
         super(OSSSHView, self).__init__()
         self.ready = False
@@ -51,22 +51,22 @@ class OSSSHView(WebsocketConsumer):
         self.port_num = None
         self.mac = None
 
-    def send(self, text_data=None, bytes_data=None, close=False):
+    async def send(self, text_data=None, bytes_data=None, close=False):
         text_data_new = text_data
         if text_data_new is not None and text_data != "":
             text_data_new.replace("\n", "<br>")
             text_data_new += "<br>"
-        super().send(text_data_new, bytes_data, close)
+        await super().send(text_data_new, bytes_data, close)
 
-    def connect(self):
+    async def connect(self):
         os_id = self.scope['url_route']['kwargs']['pk']
         os_obj = OS.objects.filter(pk=os_id)
         if len(os_obj) > 0:
             os_obj = os_obj[0]
             if os_obj.ssh_enable:
                 self.os_obj = os_obj
-                self.accept()
-                self.send(text_data="Подключено, подождите пару минут")
+                await self.accept()
+                await self.send(text_data="Подключено, подождите пару минут")
                 if os_obj.emulation_type == EMULATIONCHOICE.QEMU_KVM:
                     self.disk_name = utils.get_random_string(16)
                     self.port_num = utils.get_random_port()
@@ -79,16 +79,16 @@ class OSSSHView(WebsocketConsumer):
                         cp_ret_code = subprocess.call(start_string[0].split(' '))
                         if cp_ret_code == 0:
                             self.qemu_proc = subprocess.Popen(start_string[1].split(' '))
-                            self.send("Запущено, ожидаем включения")
-                            self.send("Просто ждите...")
-                            self.send(f"Около {self.os_obj.wait_time} секунд")
-                            self.socket_sleep(self.os_obj.wait_time)
-                            self.send("Можете начинать")
+                            await self.send("Запущено, ожидаем включения")
+                            await self.send("Просто ждите...")
+                            await self.send(f"Около {self.os_obj.wait_time} секунд")
+                            await self.socket_sleep(self.os_obj.wait_time)
+                            await self.send("Можете начинать")
                             self.ready = True
             else:
-                self.close()
+                await self.close()
         else:
-            self.close()
+            await self.close()
 
     def ssh_connect(self):
         try:
@@ -102,14 +102,14 @@ class OSSSHView(WebsocketConsumer):
                                 allow_agent=False)
         except Exception as e:
             print(e)
-            self.send("Unknown err")
+            await self.send("Unknown err")
 
-    def receive(self, text_data=None, bytes_data=None):
+    async def receive(self, text_data=None, bytes_data=None):
         if not self.ready:
-            self.send("Ещё не всё")
+            await self.send("Ещё не всё")
             return
         if text_data == "":
-            self.send("")
+            await self.send("")
         else:
             try:
                 self.ssh_connect()
@@ -121,20 +121,20 @@ class OSSSHView(WebsocketConsumer):
                     "\n\n" +
                     stderr.read().decode("utf-8")
                 ).replace("\n", "<br>")
-                self.send(output_str)
+                await self.send(output_str)
             except Exception as e:
                 print(e)
             finally:
                 self.client.close()
 
-    def disconnect(self, message):
-        super(OSSSHView, self).disconnect(message)
+    async def disconnect(self, message):
+        await super(OSSSHView, self).disconnect(message)
         if self.qemu_proc is not None:
             self.qemu_proc.kill()
             stop_config = (self.os_obj.stop_config % (self.disk_name)).split('\r\n')
             rm_popen = subprocess.call(stop_config[0].split(' '))
-            self.send(rm_popen)
-        self.close()
+            await self.send(rm_popen)
+        await self.close()
 
     def random_mac(self, emu_type="qemu"):
         """Generate a random MAC address.
@@ -168,8 +168,8 @@ class OSSSHView(WebsocketConsumer):
         self.mac = ret_mac
         return ret_mac
 
-    def socket_sleep(self, seconds):
+    async def socket_sleep(self, seconds):
         for _ in range(seconds * 100):
             libc = ctypes.CDLL('libc.so.6')
             libc.usleep(10000)
-            self.send("")
+            await self.send("")
