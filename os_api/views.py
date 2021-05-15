@@ -51,6 +51,12 @@ class OSSSHView(WebsocketConsumer):
         self.port_num = None
         self.mac = None
 
+    @override
+    def send(self, text_data=None, bytes_data=None, close=False):
+        if text_data is not None:
+            text_data.replace("\n", "<br>")
+        super().send(text_data, bytes_data, close)
+
     def connect(self):
         os_id = self.scope['url_route']['kwargs']['pk']
         os_obj = OS.objects.filter(pk=os_id)
