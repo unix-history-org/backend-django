@@ -35,6 +35,7 @@ class OS(models.Model):
     emulation_type = models.IntegerField(verbose_name="Тип эмуляции", choices=EMULATIONCHOICE.choices,
                                          default=EMULATIONCHOICE.NO)
     ssh_type = models.IntegerField(verbose_name="Тип консольного подключения", choices=SSHTYPECHOICE.choices, null=True)
+    wait_time = models.IntegerField(verbose_name="Время ожидания", default=60)
 
     def __str__(self):
         return self.name

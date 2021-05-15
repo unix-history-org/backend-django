@@ -81,7 +81,8 @@ class OSSSHView(WebsocketConsumer):
                             self.qemu_proc = subprocess.Popen(start_string[1].split(' '))
                             self.send("Запущено, ожидаем включения")
                             self.send("Просто ждите...")
-                            self.socket_sleep(90)
+                            self.send(f"Около {self.os_obj.wait_time}")
+                            self.socket_sleep(self.os_obj.wait_time)
                             self.send("Можете начинать")
                             self.ready = True
             else:
