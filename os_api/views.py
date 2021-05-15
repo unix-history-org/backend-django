@@ -133,7 +133,7 @@ class OSSSHView(AsyncWebsocketConsumer):
             self.qemu_proc.kill()
             stop_config = (self.os_obj.stop_config % (self.disk_name)).split('\r\n')
             rm_popen = subprocess.call(stop_config[0].split(' '))
-            await self.send(rm_popen)
+            await self.send(str(rm_popen))
         await self.close()
 
     def random_mac(self, emu_type="qemu"):
