@@ -102,7 +102,7 @@ class OSSSHView(AsyncWebsocketConsumer):
                                 allow_agent=False)
         except Exception as e:
             print(e)
-            await self.send("Unknown err")
+            self.send("Unknown err")
 
     async def receive(self, text_data=None, bytes_data=None):
         if not self.ready:
