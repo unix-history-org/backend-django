@@ -1,6 +1,7 @@
 import random
 import subprocess
 import ctypes
+import threading
 
 import paramiko
 
@@ -58,6 +59,16 @@ class OSSSHView(WebsocketConsumer):
             text_data_new += "<br>"
         super().send(text_data_new, bytes_data, close)
 
+    def get_live_time(self):
+        return int(self.os_obj.permission.live_time.total_seconds())
+
+    def close_connect_after_timeout(self):
+        live_time = self.get_live_time()
+        self.socket_sleep(live_time)
+        self.send("ВРЕМЯ ВЫШЛО")
+        self.disconnect("")
+        print("ВРЕМЯ ВЫШЛО")
+
     def connect(self):
         os_id = self.scope['url_route']['kwargs']['pk']
         os_obj = OS.objects.filter(pk=os_id)
@@ -83,8 +94,12 @@ class OSSSHView(WebsocketConsumer):
                             self.send("Просто ждите...")
                             self.send(f"Около {self.os_obj.wait_time} секунд")
                             self.socket_sleep(self.os_obj.wait_time)
+                            self.send(f"У вас есть {self.get_live_time()} секунд на тест")
                             self.send("Можете начинать")
                             self.ready = True
+                            th = threading.Thread(target=OSSSHView.close_connect_after_timeout, args=(self,))
+                            th.daemon = True
+                            th.start()
             else:
                 self.close()
         else:

@@ -15,6 +15,10 @@ class SSHTYPECHOICE(models.IntegerChoices):
 class Permiss(models.Model): # TODO: rename this
     live_time = models.DurationField(verbose_name="Время жизни")
 
+    def __str__(self):
+        os_obj = OS.objects.get(permission_id=self.pk)
+        return f"{os_obj.name} ({self.pk})"
+
     class Meta:
         verbose_name = "Права"
         verbose_name_plural = "Права"
