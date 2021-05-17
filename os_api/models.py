@@ -32,14 +32,21 @@ class OS(models.Model):
     photos = models.ForeignKey(Photos, verbose_name="Фото", on_delete=models.SET_NULL, null=True, blank=True)
     start_config = models.TextField(verbose_name="Конфигурация запуска", max_length=50000, null=True, blank=True)
     stop_config = models.TextField(verbose_name="Конфигурация остановки", max_length=50000, null=True, blank=True)
+    additional_info = models.TextField(
+        verbose_name="Дополнительная информация при запуске",
+        max_length=50000,
+        null=True,
+        blank=True
+    )
+    is_active = models.BooleanField(verbose_name="Активна", default=True)
     ssh_enable = models.BooleanField(verbose_name="SSH активирован", default=False)
     vnc_enable = models.BooleanField(verbose_name="VNC активирован", default=False)
+    wait_time = models.IntegerField(verbose_name="Время ожидания", default=60)
     permission = models.OneToOneField(Permiss, verbose_name="Права", on_delete=models.CASCADE, null=True)
-    is_active = models.BooleanField(verbose_name="Активна", default=True)
+    ssh_type = models.IntegerField(verbose_name="Тип консольного подключения", choices=SSHTYPECHOICE.choices, null=True)
     emulation_type = models.IntegerField(verbose_name="Тип эмуляции", choices=EMULATIONCHOICE.choices,
                                          default=EMULATIONCHOICE.NO)
-    ssh_type = models.IntegerField(verbose_name="Тип консольного подключения", choices=SSHTYPECHOICE.choices, null=True)
-    wait_time = models.IntegerField(verbose_name="Время ожидания", default=60)
+
 
     def __str__(self):
         return self.name

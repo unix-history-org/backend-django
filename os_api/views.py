@@ -2,6 +2,7 @@ import random
 import subprocess
 import ctypes
 import threading
+import datetime
 
 import paramiko
 
@@ -41,6 +42,7 @@ class OSListView(ListAPIView, RetrieveModelMixin):
 
 
 # TODO: Rewrite this fucking shit
+# TODO: Rewrite to async
 class OSSSHView(WebsocketConsumer):
     def __init__(self):
         super(OSSSHView, self).__init__()
@@ -70,23 +72,31 @@ class OSSSHView(WebsocketConsumer):
         print("ВРЕМЯ ВЫШЛО")
 
     def connect(self):
+        connect_str = f"Start connect to os with id: {self.scope['url_route']['kwargs']['pk']}" \
+                      f"\nFrom: {self.scope['client'][0]}\n" \
+                      f"On {datetime.datetime.now()}\n\n"
+        file = open("/home/verdgil/log/connect.log", "a")
+        print(connect_str, file=file)
+        file.close()
         os_id = self.scope['url_route']['kwargs']['pk']
-        os_obj = OS.objects.filter(pk=os_id)
-        if len(os_obj) > 0:
-            os_obj = os_obj[0]
-            if os_obj.ssh_enable:
-                self.os_obj = os_obj
+        os_obj_list = OS.objects.filter(pk=os_id)
+        if len(os_obj_list) > 0:
+            self.os_obj = os_obj_list[0]
+            if self.os_obj.ssh_enable:
+                self.os_obj = self.os_obj
                 self.accept()
                 self.send(text_data="Подключено, подождите пару минут")
-                if os_obj.emulation_type == EMULATIONCHOICE.QEMU_KVM:
+                if self.os_obj.emulation_type == EMULATIONCHOICE.QEMU_KVM:
+                    if self.os_obj.additional_info is not None:
+                        self.send(self.os_obj.additional_info)
                     self.disk_name = utils.get_random_string(16)
                     self.port_num = utils.get_random_port()
                     self.random_mac()
-                    start_string = (os_obj.start_config %
+                    start_string = (self.os_obj.start_config %
                                     (self.disk_name, self.disk_name, self.mac, str(self.port_num),
                                      self.disk_name)).split('\r\n')
                     print(start_string)
-                    if os_obj.ssh_type == SSHTYPECHOICE.SSH:
+                    if self.os_obj.ssh_type == SSHTYPECHOICE.SSH:
                         cp_ret_code = subprocess.call(start_string[0].split(' '))
                         if cp_ret_code == 0:
                             self.qemu_proc = subprocess.Popen(start_string[1].split(' '))
@@ -146,7 +156,9 @@ class OSSSHView(WebsocketConsumer):
         super(OSSSHView, self).disconnect(message)
         if self.qemu_proc is not None:
             self.qemu_proc.kill()
-            stop_config = (self.os_obj.stop_config % (self.disk_name)).split('\r\n')
+            stop_config = (self.os_obj.stop_config % (
+                self.disk_name
+            )).split('\r\n')
             rm_popen = subprocess.call(stop_config[0].split(' '))
             self.send(str(rm_popen))
         self.close()
