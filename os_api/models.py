@@ -17,7 +17,7 @@ class Permiss(models.Model): # TODO: rename this
 
     def __str__(self):
         try:
-            os_obj = OS.objects.get(permission_id=self.pk, default=None)
+            os_obj = OS.objects.get(permission_id=self.pk)
             return f"{os_obj.name} ({self.pk})"
         except self.DoesNotExist:
             return ""
