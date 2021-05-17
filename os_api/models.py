@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from core.models import Photos
 
@@ -19,7 +20,7 @@ class Permiss(models.Model):  # TODO: rename this
         try:
             os_obj = OS.objects.get(permission_id=self.pk)
             return f"{os_obj.name} ({self.pk})"
-        except super().DoesNotExist:
+        except ObjectDoesNotExist:
             return ""
 
     class Meta:
