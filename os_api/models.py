@@ -16,10 +16,10 @@ class Permiss(models.Model): # TODO: rename this
     live_time = models.DurationField(verbose_name="Время жизни")
 
     def __str__(self):
-        os_obj = OS.objects.get(permission_id=self.pk, default=None)
-        if os_obj is not None:
+        try:
+            os_obj = OS.objects.get(permission_id=self.pk, default=None)
             return f"{os_obj.name} ({self.pk})"
-        else:
+        except self.DoesNotExist:
             return ""
 
     class Meta:
