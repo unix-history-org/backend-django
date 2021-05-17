@@ -132,4 +132,4 @@ dmypy.json
 
 # settings remove
 unixhistory/settings.py
-static/
+./static/*
