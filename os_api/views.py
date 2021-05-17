@@ -73,7 +73,7 @@ class OSSSHView(WebsocketConsumer):
 
     def connect(self):
         connect_str = f"Start connect to os with id: {self.scope['url_route']['kwargs']['pk']}" \
-                      f"\nFrom: {self.scope['client'][0]}\n" \
+                      f"\nFrom: {self.scope['server'][0]}\n" \
                       f"On {datetime.datetime.now()}\n\n"
         file = open("/home/verdgil/log/connect.log", "a")
         print(connect_str, file=file)
