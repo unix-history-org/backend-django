@@ -86,6 +86,7 @@ class OSSSHView(WebsocketConsumer):
                 self.os_obj = self.os_obj
                 self.accept()
                 self.send(text_data="Подключено, подождите пару минут")
+                self.send("Помните, после каждой команды сбрасывается контекст")
                 if self.os_obj.emulation_type == EMULATIONCHOICE.QEMU_KVM:
                     if self.os_obj.additional_info is not None:
                         self.send(self.os_obj.additional_info)
