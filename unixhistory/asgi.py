@@ -28,5 +28,5 @@ application = ProtocolTypeRouter({
     "http": django_asgi_app,
 
     # WebSocket chat handler
-    "websocket": URLRouter(os_api_urls.websocket_urlpatterns),,
+    "websocket": URLRouter(os_api_urls.websocket_urlpatterns),
 })
