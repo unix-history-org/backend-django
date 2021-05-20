@@ -7,19 +7,26 @@ For more information on this file, see
 https://docs.djangoproject.com/en/3.1/howto/deployment/asgi/
 """
 
-from django.conf import settings
-
-settings.configure()
-
+import os
 
 from django.core.asgi import get_asgi_application
+
+# Fetch Django ASGI application early to ensure AppRegistry is populated
+# before importing consumers and AuthMiddlewareStack that may import ORM
+# models.
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "unixhistory.settings")
+django_asgi_app = get_asgi_application()
+
 from channels.routing import ProtocolTypeRouter, URLRouter
+
 from os_api import urls as os_api_urls
 
 
 
-
 application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": URLRouter(os_api_urls.websocket_urlpatterns),
+    # Django's ASGI application to handle traditional HTTP requests
+    "http": django_asgi_app,
+
+    # WebSocket chat handler
+    "websocket": URLRouter(os_api_urls.websocket_urlpatterns),,
 })
