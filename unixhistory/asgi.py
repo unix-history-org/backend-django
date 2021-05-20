@@ -29,7 +29,7 @@ application = ProtocolTypeRouter({
     "http": django_asgi_app,
 
     # WebSocket chat handler
-    "websocket": URLRouter(
+    "websocket": URLRouter([
         url(r'api/os/<int:pk>/ssh', OSSSHView.as_asgi()),
-    ),
+    ]),
 })
