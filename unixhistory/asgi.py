@@ -16,7 +16,7 @@ from django.core.asgi import get_asgi_application
 # Fetch Django ASGI application early to ensure AppRegistry is populated
 # before importing consumers and AuthMiddlewareStack that may import ORM
 # models.
-
+from django.urls import path
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "unixhistory.settings")
 django_asgi_app = get_asgi_application()
@@ -30,6 +30,6 @@ application = ProtocolTypeRouter({
 
     # WebSocket chat handler
     "websocket": URLRouter([
-        url(r'api/os/<int:pk>/ssh', OSSSHView.as_asgi()),
+        path(r'api/os/<int:pk>/ssh', OSSSHView.as_asgi()),
     ]),
 })
