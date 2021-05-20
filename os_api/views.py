@@ -53,6 +53,7 @@ class OSSSHView(WebsocketConsumer):
         self.disk_name = None
         self.port_num = None
         self.mac = None
+        self.start_string = None
 
     def send(self, text_data=None, bytes_data=None, close=False):
         text_data_new = text_data
@@ -71,50 +72,82 @@ class OSSSHView(WebsocketConsumer):
         self.disconnect("")
         print("ВРЕМЯ ВЫШЛО")
 
-    def connect(self):
+    @staticmethod
+    def run_copy(command):
+        return subprocess.call(command.split(' '))
+
+    def create_hard_drive(self, command):
+        th = threading.Thread(target=OSSSHView.run_copy, args=(command,))
+        th.start()
+        th.join()
+
+    def get_start_string(self):
+        if self.start_string is None:
+            self.disk_name = utils.get_random_string(16)
+            self.port_num = utils.get_random_port()
+            self.random_mac()
+            self.start_string = (self.os_obj.start_config % (
+                self.disk_name,
+                self.disk_name,
+                self.mac,
+                str(self.port_num),
+                self.disk_name
+            )).split('\r\n')
+        return self.start_string
+
+    def start_emu(self):
+        self.qemu_proc = subprocess.Popen(self.get_start_string()[1].split(' '))
+        self.send("Запущено, ожидаем включения")
+        self.send("Просто ждите...")
+        self.send(f"Около {self.os_obj.wait_time} секунд")
+        self.socket_sleep(self.os_obj.wait_time)
+        self.send(f"У вас есть {self.get_live_time()} секунд на тест")
+        self.send("Можете начинать")
+        self.ready = True
+        th = threading.Thread(target=OSSSHView.close_connect_after_timeout, args=(self,))
+        th.daemon = True
+        th.start()
+
+    def start_th_for_emu(self):
+        th = threading.Thread(target=OSSSHView.start_emu, args=(self,))
+        th.daemon = True
+        th.start()
+
+    def log_connect_to_vm(self):
         connect_str = f"Start connect to os with id: {self.scope['url_route']['kwargs']['pk']}" \
                       f"\nFrom: {self.scope['headers'][1][1]}\n" \
                       f"On {datetime.datetime.now()}\n\n"
         file = open("/home/verdgil/log/connect.log", "a")
         print(connect_str, file=file)
         file.close()
+
+    def get_os_obj(self):
         os_id = self.scope['url_route']['kwargs']['pk']
         os_obj_list = OS.objects.filter(pk=os_id)
         if len(os_obj_list) > 0:
             self.os_obj = os_obj_list[0]
-            if self.os_obj.ssh_enable:
-                self.os_obj = self.os_obj
-                self.accept()
-                self.send(text_data="Подключено, подождите пару минут")
-                self.send("Помните, после каждой команды сбрасывается контекст")
-                if self.os_obj.emulation_type == EMULATIONCHOICE.QEMU_KVM:
-                    if self.os_obj.additional_info is not None:
-                        self.send(self.os_obj.additional_info)
-                    self.disk_name = utils.get_random_string(16)
-                    self.port_num = utils.get_random_port()
-                    self.random_mac()
-                    start_string = (self.os_obj.start_config %
-                                    (self.disk_name, self.disk_name, self.mac, str(self.port_num),
-                                     self.disk_name)).split('\r\n')
-                    print(start_string)
-                    if self.os_obj.ssh_type == SSHTYPECHOICE.SSH:
-                        cp_ret_code = subprocess.call(start_string[0].split(' '))
-                        if cp_ret_code == 0:
-                            self.qemu_proc = subprocess.Popen(start_string[1].split(' '))
-                            self.send("Запущено, ожидаем включения")
-                            self.send("Просто ждите...")
-                            self.send(f"Около {self.os_obj.wait_time} секунд")
-                            self.socket_sleep(self.os_obj.wait_time)
-                            self.send(f"У вас есть {self.get_live_time()} секунд на тест")
-                            self.send("Можете начинать")
-                            self.ready = True
-                            th = threading.Thread(target=OSSSHView.close_connect_after_timeout, args=(self,))
-                            th.daemon = True
-                            th.start()
-            else:
-                self.close()
+            return os_obj_list
         else:
-            self.close()
+            self.close(1000)
+
+    def connect(self):
+        self.log_connect_to_vm()
+        self.get_os_obj()
+
+        if self.os_obj.ssh_enable:
+            self.accept()
+            self.send(text_data="Подключено, подождите пару минут")
+            self.send("Помните, после каждой команды сбрасывается контекст")
+            if self.os_obj.emulation_type == EMULATIONCHOICE.QEMU_KVM:
+                if self.os_obj.additional_info is not None:
+                    self.send(self.os_obj.additional_info)
+                self.get_start_string()
+                print(self.start_string)
+                if self.os_obj.ssh_type == SSHTYPECHOICE.SSH:
+                    self.create_hard_drive(self.start_string[0])
+                    self.start_th_for_emu()
+            else:
+                self.close(1000)
 
     def ssh_connect(self):
         try:
@@ -154,7 +187,11 @@ class OSSSHView(WebsocketConsumer):
                 self.client.close()
 
     def disconnect(self, message):
+        self.close(message)
         super(OSSSHView, self).disconnect(message)
+
+    def close(self, code=None):
+        print(code)
         if self.qemu_proc is not None:
             self.qemu_proc.kill()
             stop_config = (self.os_obj.stop_config % (
@@ -162,7 +199,7 @@ class OSSSHView(WebsocketConsumer):
             )).split('\r\n')
             rm_popen = subprocess.call(stop_config[0].split(' '))
             self.send(str(rm_popen))
-        self.close()
+        super().close()
 
     def random_mac(self, emu_type="qemu"):
         """Generate a random MAC address.
