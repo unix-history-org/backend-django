@@ -18,10 +18,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "unixhistory.settings")
 django_asgi_app = get_asgi_application()
 
 from channels.routing import ProtocolTypeRouter, URLRouter
-
 from os_api import urls as os_api_urls
-
-
 
 application = ProtocolTypeRouter({
     # Django's ASGI application to handle traditional HTTP requests
