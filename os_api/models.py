@@ -51,7 +51,6 @@ class OS(models.Model):
     emulation_type = models.IntegerField(verbose_name="Тип эмуляции", choices=EMULATIONCHOICE.choices,
                                          default=EMULATIONCHOICE.NO)
 
-
     def __str__(self):
         return self.name
 

@@ -97,6 +97,7 @@ class OSSSHView(WebsocketConsumer):
         return self.start_string
 
     def start_emu(self):
+        self.create_hard_drive(self.start_string[0])
         self.qemu_proc = subprocess.Popen(self.get_start_string()[1].split(' '))
         self.send("Запущено, ожидаем включения")
         self.send("Просто ждите...")
@@ -146,7 +147,6 @@ class OSSSHView(WebsocketConsumer):
                 self.get_start_string()
                 print(self.start_string)
                 if self.os_obj.ssh_type == SSHTYPECHOICE.SSH:
-                    self.create_hard_drive(self.start_string[0])
                     self.start_th_for_emu()
             else:
                 self.close(1000)
