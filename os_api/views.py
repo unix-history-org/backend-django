@@ -54,6 +54,7 @@ class OSSSHView(WebsocketConsumer):
         self.port_num = None
         self.mac = None
         self.start_string = None
+        self.start_copy = False
 
     def send(self, text_data=None, bytes_data=None, close=False):
         text_data_new = text_data
@@ -109,6 +110,7 @@ class OSSSHView(WebsocketConsumer):
         th.start()
 
     def start_th_for_emu(self):
+        self.start_copy = True
         th = threading.Thread(target=OSSSHView.start_emu, args=(self,))
         th.daemon = True
         th.start()
@@ -191,14 +193,18 @@ class OSSSHView(WebsocketConsumer):
         super(OSSSHView, self).disconnect(message)
 
     def close(self, code=None):
-        print(code)
-        if self.qemu_proc is not None:
-            self.qemu_proc.kill()
+        if self.start_copy:
             stop_config = (self.os_obj.stop_config % (
                 self.disk_name
             )).split('\r\n')
             rm_popen = subprocess.call(stop_config[0].split(' '))
             self.send(str(rm_popen))
+            print(code)
+            self.start_copy = False
+
+        if self.qemu_proc is not None:
+            self.qemu_proc.kill()
+            self.qemu_proc = None
         super().close()
 
     def random_mac(self, emu_type="qemu"):
